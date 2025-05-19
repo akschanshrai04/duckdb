@@ -1,6 +1,13 @@
 #include "json_serializer.hpp"
 #include "duckdb/common/types/blob.hpp"
 
+std::string JsonSerializer::FormatTimestamp(timestamp_t value, const std::string &format) {
+    // Use a date-time library or utility to format the timestamp
+    // This is a placeholder for the actual formatting logic
+    // Example: return DateTimeFormatter::Format(value, format);
+    return ""; // Replace with actual implementation
+}
+
 namespace duckdb {
 
 void JsonSerializer::PushValue(yyjson_mut_val *val) {
@@ -214,6 +221,15 @@ void JsonSerializer::WriteDataPtr(const_data_ptr_t ptr, idx_t count) {
 	auto blob = Blob::ToString(string_t(const_char_ptr_cast(ptr), count));
 	auto val = yyjson_mut_strcpy(doc, blob.c_str());
 	PushValue(val);
+}
+
+void JsonSerializer::WriteValue(timestamp_t value, const std::string &timestamp_format) {
+    // Convert the timestamp to a string using the specified format
+    std::string formatted_timestamp = FormatTimestamp(value, timestamp_format);
+    // Create a JSON string value with the formatted timestamp
+    auto val = yyjson_mut_strncpy(doc, formatted_timestamp.c_str(), formatted_timestamp.size());
+    // Push the formatted value to the JSON document
+    PushValue(val);
 }
 
 } // namespace duckdb
